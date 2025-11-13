@@ -1,3 +1,16 @@
 node_modules
 node_modules
 node_modules
+
+# Local envs
+.env
+.env.local
+
+# Build output
+dist/
+
+# VSCode
+.vscode/
+
+# OS
+.DS_Store

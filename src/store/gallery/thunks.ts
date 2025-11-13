@@ -29,7 +29,12 @@ export const startNewProject = () => {
       title: '',
       body: '',
       date: new Date().getTime(),
+      startDate: new Date().getTime(),
+      endDate: new Date().getTime(),
       imagesUrls: [],
+      acceptanceCriteria: [],
+      withAcceptanceCriteria: false,
+      milestones: [],
     };
 
     await setDoc(newDoc, newProject);

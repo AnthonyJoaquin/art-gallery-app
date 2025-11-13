@@ -29,11 +29,14 @@ export const startNewProject = () => {
       title: '',
       body: '',
       date: new Date().getTime(),
+      // ECUS 02: Initialize project date range for milestone tracking
       startDate: new Date().getTime(),
       endDate: new Date().getTime(),
       imagesUrls: [],
+      // ECUS 01: Initialize acceptance criteria array
       acceptanceCriteria: [],
       withAcceptanceCriteria: false,
+      // ECUS 02: Initialize empty milestones timeline
       milestones: [],
     };
 

@@ -1,11 +1,9 @@
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Button, Grid, IconButton, TextField, Typography, Chip, Snackbar, Alert } from '@mui/material';
 import DeleteOutline from '@mui/icons-material/DeleteOutline';
 import SaveOutlined from '@mui/icons-material/SaveOutlined';
 import UploadOutlined from '@mui/icons-material/UploadOutlined';
-import LightModeOutlined from '@mui/icons-material/LightModeOutlined';
-import DarkModeOutlined from '@mui/icons-material/DarkModeOutlined';
 
 import type { ProjectState } from '../types/project-state';
 
@@ -18,26 +16,8 @@ import {
 } from '../../store/gallery';
 
 import { ImageGallery } from '../../ui';
-import { ThemeModeContext } from '../../theme/AppTheme';
 
 type ProjectForm = Omit<ProjectState, 'id' | 'imagesUrls' | 'date'>;
-
-// Small header toggle component for theme switching
-const ThemeToggle = () => {
-  try {
-    const ctx = useContext(ThemeModeContext);
-    if (!ctx) return null;
-    const { mode, toggleMode } = ctx;
-
-    return (
-      <IconButton onClick={toggleMode} size="small" sx={{ ml: 1 }} title={mode === 'light' ? 'Activar modo oscuro' : 'Activar modo claro'}>
-        {mode === 'light' ? <DarkModeOutlined fontSize="small" /> : <LightModeOutlined fontSize="small" />}
-      </IconButton>
-    );
-  } catch {
-    return null;
-  }
-};
 
 export const ProjectView = () => {
   const {
@@ -263,8 +243,6 @@ export const ProjectView = () => {
             sx={{ fontWeight: 500 }}
           />
         ) : null}
-        {/* Theme toggle placed in header */}
-        <ThemeToggle />
       </Grid>
 
       <Grid>

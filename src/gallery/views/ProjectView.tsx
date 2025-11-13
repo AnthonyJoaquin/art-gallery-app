@@ -26,7 +26,10 @@ export const ProjectView = () => {
     isSaving,
   } = useAppSelector((state) => state.gallery);
 
-  const { body, date, title } = project!;
+  // Si no hay proyecto activo (estado aún no cargado), evitar render y errores de tipo
+  if (!project) return <></>;
+
+  const { body, date, title } = project;
 
   // Form initialization with ECUS 01 and ECUS 02 fields
   const { control, watch, setValue } = useForm<ProjectForm>({
@@ -59,7 +62,7 @@ export const ProjectView = () => {
   }, [savedMessage]);
 
   const onSaveProject = () => {
-    const { title, body, acceptanceCriteria } = watch();
+    const { title, body } = watch();
     const { startDate, endDate, acceptanceCriteria: ac } = watch();
 
     // ECUS 02: Validate project date range (startDate <= endDate)
@@ -80,7 +83,7 @@ export const ProjectView = () => {
       startDate: startDate ?? project!.startDate,
       endDate: endDate ?? project!.endDate,
       withAcceptanceCriteria: (ac ?? []).length > 0,
-      milestones: watch('milestones') ?? project!.milestones,
+      milestones: watch('milestones') ?? project.milestones,
     };
 
     // If there are no criteria, show the required-exception message (but still save other fields)
@@ -282,7 +285,7 @@ export const ProjectView = () => {
         </Button>
       </Grid>
 
-      <Grid container size={12} sx={{ mt: 2 }}>
+      <Grid container sx={{ mt: 2 }}>
         <Controller
           name="title"
           control={control}

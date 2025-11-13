@@ -11,7 +11,7 @@ vi.mock('firebase/firestore', async (importOriginal) => {
 });
 
 describe('thunks (gallery) - dates', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => { vi.clearAllMocks(); });
 
   test('startSavingProject debe persistir startDate y endDate en firestore', async () => {
     const dispatch = vi.fn();

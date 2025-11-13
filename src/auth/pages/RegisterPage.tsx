@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Link as RouterLink } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import {
   Alert,
@@ -93,11 +93,11 @@ export const RegisterPage = () => {
           </Grid>
 
           <Grid container spacing={2} sx={{ mb: 2, mt: 2 }}>
-            <Grid size={12} display={!errorMessage === false ? '' : 'none'}>
+            <Grid xs={12} sx={{ display: !errorMessage === false ? '' : 'none' }}>
               <Alert severity="error">{errorMessage}</Alert>
             </Grid>
 
-            <Grid size={12}>
+            <Grid xs={12}>
               <Button
                 disabled={isChekingAuthentication}
                 variant="contained"

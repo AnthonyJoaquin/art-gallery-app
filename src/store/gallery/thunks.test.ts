@@ -11,7 +11,7 @@ vi.mock('firebase/firestore', async (importOriginal) => {
 });
 
 describe('thunks (gallery)', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => { vi.clearAllMocks(); });
 
   test('startSavingProject debe enviar projectToFirestore sin id e incluir withAcceptanceCriteria', async () => {
     const dispatch = vi.fn();

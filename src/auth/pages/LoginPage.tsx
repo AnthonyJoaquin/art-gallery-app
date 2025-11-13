@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link as RouterLink } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
 import {
   Alert,
   Button,
@@ -66,11 +66,7 @@ export const LoginPage = () => {
               type="password"
               placeholder="Contraseña"
               fullWidth
-              slotProps={{
-                htmlInput: {
-                  'data-testid': 'password',
-                },
-              }}
+              inputProps={{ 'data-testid': 'password' }}
               error={!!errors.password}
               helperText={errors.password?.message}
               {...register('password', {
@@ -80,11 +76,11 @@ export const LoginPage = () => {
           </Grid>
 
           <Grid container spacing={2} sx={{ mb: 2, mt: 2 }}>
-            <Grid size={12} display={!errorMessage === false ? '' : 'none'}>
+            <Grid xs={12} sx={{ display: !errorMessage === false ? '' : 'none' }}>
               <Alert severity="error">{errorMessage}</Alert>
             </Grid>
 
-            <Grid size={12}>
+            <Grid xs={12}>
               <Button
                 disabled={isAuthenticating}
                 type="submit"

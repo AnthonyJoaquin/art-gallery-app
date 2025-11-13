@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import './portfolio-health.css';
 import {
   Box,
@@ -11,12 +12,14 @@ import {
   Button,
   Chip,
 } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material';
 import { collection, onSnapshot, query } from 'firebase/firestore';
 import { useAppDispatch, useAppSelector } from '../../store/reduxHooks';
 import { FirebaseDB } from '../../firebase/config';
 import type { ProjectState } from '../types/project-state';
+import type { AuthState } from '../../auth/types';
 import { setActiveProject } from '../../store/gallery';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 
 type HealthState = 'green' | 'amber' | 'red';
 
@@ -38,7 +41,7 @@ const healthLabel = {
 export const PortfolioHealthBoard = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { uid } = useAppSelector((s) => s.auth);
+  const { uid = null } = useAppSelector((state: { auth: AuthState }) => state.auth);
 
   const [projects, setProjects] = useState<ProjectState[]>([]);
   const [statusFilter, setStatusFilter] = useState<'all' | HealthState>('all');
@@ -52,35 +55,39 @@ export const PortfolioHealthBoard = () => {
     const q = query(col);
     const unsub = onSnapshot(q, (snap) => {
       const items: ProjectState[] = [];
-      snap.forEach((d) => items.push({ ...(d.data() as ProjectState), id: (d.data() as any).id ?? d.id }));
+      snap.forEach((d: any) => items.push({ ...(d.data() as ProjectState), id: (d.data() as any).id ?? d.id }));
       setProjects(items);
     });
     return () => unsub();
   }, [uid]);
 
-  const projectsWithHealth = useMemo(() => projects.map((p) => ({ project: p, health: computeHealth(p) })), [projects]);
+  type ProjectWithHealth = { project: ProjectState; health: HealthState };
+
+  const projectsWithHealth: ProjectWithHealth[] = useMemo(
+    () => projects.map((p: ProjectState) => ({ project: p, health: computeHealth(p) })),
+    [projects]
+  );
 
   const filtered = useMemo(() => {
-    let list = projectsWithHealth.slice();
+    let list: ProjectWithHealth[] = projectsWithHealth.slice();
 
-    if (statusFilter !== 'all') list = list.filter((x) => x.health === statusFilter);
+    if (statusFilter !== 'all') list = list.filter((x: ProjectWithHealth) => x.health === statusFilter);
 
     if (fromDate) {
       const from = new Date(fromDate).getTime();
-      list = list.filter((x) => (x.project.date ?? 0) >= from);
+      list = list.filter((x: ProjectWithHealth) => (x.project.date ?? 0) >= from);
     }
 
     if (toDate) {
       const to = new Date(toDate).getTime();
-      list = list.filter((x) => (x.project.date ?? 0) <= to);
+      list = list.filter((x: ProjectWithHealth) => (x.project.date ?? 0) <= to);
     }
 
     if (responsibleFilter.trim().length > 0) {
       const term = responsibleFilter.toLowerCase();
-      list = list.filter(
-        (x) =>
-          (x.project.title ?? '').toLowerCase().includes(term) ||
-          (x.project.body ?? '').toLowerCase().includes(term)
+      list = list.filter((x: ProjectWithHealth) =>
+        (x.project.title ?? '').toLowerCase().includes(term) ||
+        (x.project.body ?? '').toLowerCase().includes(term)
       );
     }
 
@@ -94,9 +101,9 @@ export const PortfolioHealthBoard = () => {
 
   const counts = useMemo(
     () => ({
-      green: projectsWithHealth.filter((x) => x.health === 'green').length,
-      amber: projectsWithHealth.filter((x) => x.health === 'amber').length,
-      red: projectsWithHealth.filter((x) => x.health === 'red').length,
+      green: projectsWithHealth.filter((x: ProjectWithHealth) => x.health === 'green').length,
+      amber: projectsWithHealth.filter((x: ProjectWithHealth) => x.health === 'amber').length,
+      red: projectsWithHealth.filter((x: ProjectWithHealth) => x.health === 'red').length,
     }),
     [projectsWithHealth]
   );
@@ -124,21 +131,38 @@ export const PortfolioHealthBoard = () => {
 
         <Box sx={{ flex: 1 }} />
 
-        <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as any)}>
+  <Select value={statusFilter} onChange={(e: SelectChangeEvent<'all' | HealthState>) => setStatusFilter(e.target.value as 'all' | HealthState)}>
           <MenuItem value="all">Todos</MenuItem>
           <MenuItem value="green">Verde (saludable)</MenuItem>
           <MenuItem value="amber">Ámbar (en atención)</MenuItem>
           <MenuItem value="red">Rojo (crítico)</MenuItem>
         </Select>
 
-        <TextField type="date" label="Desde" InputLabelProps={{ shrink: true }} value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
-        <TextField type="date" label="Hasta" InputLabelProps={{ shrink: true }} value={toDate} onChange={(e) => setToDate(e.target.value)} />
-        <TextField label="Responsable" placeholder="Buscar por responsable (aprox.)" value={responsibleFilter} onChange={(e) => setResponsibleFilter(e.target.value)} />
+        <TextField 
+          type="date" 
+          label="Desde" 
+          InputLabelProps={{ shrink: true }} 
+          value={fromDate} 
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFromDate(e.target.value)} 
+        />
+        <TextField 
+          type="date" 
+          label="Hasta" 
+          InputLabelProps={{ shrink: true }} 
+          value={toDate} 
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setToDate(e.target.value)} 
+        />
+        <TextField 
+          label="Responsable" 
+          placeholder="Buscar por responsable (aprox.)" 
+          value={responsibleFilter} 
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setResponsibleFilter(e.target.value)} 
+        />
         <Button onClick={() => { setFromDate(''); setToDate(''); setResponsibleFilter(''); setStatusFilter('all'); }}>Limpiar filtros</Button>
       </Box>
 
       <Box className="cards-grid">
-        {filtered.map((item) => {
+  {filtered.map((item: ProjectWithHealth) => {
           const p = item.project;
           const health = computeHealth(p);
           return (
